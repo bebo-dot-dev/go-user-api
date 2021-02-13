@@ -1,4 +1,4 @@
-module github/jjssoftware/go-user-api/go
+module github.com/jjssoftware/go-user-api
 
 go 1.15
 
