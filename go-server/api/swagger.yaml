@@ -7,9 +7,9 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
+  version: 2.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/jjssoftware/User_API/1.0.0
+- url: https://virtserver.swaggerhub.com/jjssoftware/User_API/2.0.0
   description: SwaggerHub API Auto Mocking
 tags:
 - name: Users API
@@ -185,6 +185,7 @@ components:
       example:
         sessionId: d290f1ee-6c54-4b01-90e6-d701748f0851
       allOf:
+      - $ref: '#/components/schemas/NewUser'
       - $ref: '#/components/schemas/User'
       - type: object
     UserCredentials:
