@@ -1,6 +1,0 @@
-User API
-
-AddUser - adds a new user
-AuthenticateUser - authenticates a user with a username and password and returns a session uuid
-GetUserById - returns the user represented by a specific userId
-GetUserByUserName -returns the user represented by a specific userName
