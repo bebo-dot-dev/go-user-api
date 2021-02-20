@@ -22,4 +22,6 @@ jobs:
         run: java -jar ./openapi-generator-cli.jar generate -i ./definition/api.yaml -g go-server -o ./ -ppackageName=api
       - name: List the contents of the workflow action working dir
         working-directory: ${{ github.workspace }}
-        run: ls -la   
+        run: ls -la
+      - name: Commit generated code
+        run: chmod u+x ./git_push.sh && ./git_push.sh
