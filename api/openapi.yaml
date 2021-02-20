@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: joe@jjssoftware.co.uk
+  description: An API for managing system users
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: User API
+  version: 1.0.3
+servers:
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/jjssoftware/User_API/1.0.3
+tags:
+- description: API operations
+  name: User API
+paths:
+  /addUser:
+    put:
+      description: Adds a new user to the system
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+        description: the user to add
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: user created
+        "400":
+          description: invalid input, object invalid
+        "409":
+          description: a user with the supplied details already exists
+      summary: adds a new user
+      tags:
+      - User API
+  /getUser/{userId}:
+    get:
+      description: |
+        pass a userId and get a User
+      operationId: getUserByUserId
+      parameters:
+      - description: the userId of the user being searched
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: the user matching the given userId
+        "400":
+          description: bad input parameter
+      summary: returns a user for a specific userId
+      tags:
+      - User API
+  /getUser/{userName}:
+    get:
+      description: |
+        pass a userId and get a User
+      operationId: getUserByUserName
+      parameters:
+      - description: the userName of the user being searched
+        explode: false
+        in: path
+        name: userName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: the user matching the given userName
+        "400":
+          description: bad input parameter
+      summary: returns a user for a specific userName
+      tags:
+      - User API
+  /authenticate:
+    post:
+      description: Authenticates a user with the system
+      operationId: authenticateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+        description: the user to authenticate
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
+          description: user authenticated
+        "400":
+          description: invalid input, object invalid
+        "409":
+          description: a user with the supplied details already exists
+      tags:
+      - User API
+components:
+  schemas:
+    NewUser:
+      example:
+        firstName: Joe
+        surname: Lippa
+        userName: joelippa
+      properties:
+        userName:
+          example: joelippa
+          type: string
+        firstName:
+          example: Joe
+          type: string
+        surname:
+          example: Lippa
+          type: string
+      required:
+      - firstName
+      - surname
+      - userName
+      type: object
+    User:
+      allOf:
+      - $ref: '#/components/schemas/NewUser'
+      - type: object
+      example:
+        id: 123
+        uniqueId: d290f1ee-6c54-4b01-90e6-d701748f0851
+        createTimestamp: 2021-02-13T12:25:50.001Z
+      properties:
+        id:
+          example: 123
+          type: integer
+        uniqueId:
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          format: uuid
+          type: string
+        createTimestamp:
+          example: 2021-02-13T12:25:50.001Z
+          format: date-time
+          type: string
+      required:
+      - createTimestamp
+      - id
+      - uniqueId
+    AuthenticatedUser:
+      allOf:
+      - $ref: '#/components/schemas/NewUser'
+      - $ref: '#/components/schemas/User'
+      - type: object
+      example:
+        sessionId: d290f1ee-6c54-4b01-90e6-d701748f0851
+      properties:
+        sessionId:
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          format: uuid
+          type: string
+      required:
+      - sessionId
+    UserCredentials:
+      example:
+        password: password
+        username: joelippa
+      properties:
+        username:
+          example: joelippa
+          type: string
+        password:
+          example: password
+          type: string
+      required:
+      - password
+      - userName
+      type: object
