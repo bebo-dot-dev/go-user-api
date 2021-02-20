@@ -22,7 +22,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: ls -la
       - name: Execute code gen
-        run: java -jar ./openapi-generator-cli.jar generate -i ./definition/api.yaml -g go-server -o ./ -ppackageName=api
+        run: java -jar ./openapi-generator-cli.jar generate -i ./definition/api.yaml -g go-server -o ./ -ppackageName=api --git-user-id=jjssoftware --git-repo-id=go-user-api
       - name: List the contents of the workflow action working dir
         working-directory: ${{ github.workspace }}
         run: ls -la
