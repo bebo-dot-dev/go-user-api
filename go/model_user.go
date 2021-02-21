@@ -15,6 +15,7 @@ import (
 )
 
 type User struct {
+
 	Id int32 `json:"id"`
 
 	UniqueId string `json:"uniqueId"`

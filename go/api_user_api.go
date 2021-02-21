@@ -25,12 +25,12 @@ type UserAPIApiController struct {
 
 // NewUserAPIApiController creates a default api controller
 func NewUserAPIApiController(s UserAPIApiServicer) Router {
-	return &UserAPIApiController{service: s}
+	return &UserAPIApiController{ service: s }
 }
 
 // Routes returns all of the api route for the UserAPIApiController
 func (c *UserAPIApiController) Routes() Routes {
-	return Routes{
+	return Routes{ 
 		{
 			"AddUser",
 			strings.ToUpper("Put"),
@@ -59,13 +59,13 @@ func (c *UserAPIApiController) Routes() Routes {
 }
 
 // AddUser - adds a new user
-func (c *UserAPIApiController) AddUser(w http.ResponseWriter, r *http.Request) {
+func (c *UserAPIApiController) AddUser(w http.ResponseWriter, r *http.Request) { 
 	newUser := &NewUser{}
 	if err := json.NewDecoder(r.Body).Decode(&newUser); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	
 	result, err := c.service.AddUser(r.Context(), *newUser)
 	//If an error occured, encode the error with the status code
 	if err != nil {
@@ -74,17 +74,17 @@ func (c *UserAPIApiController) AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 	//If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
-
+	
 }
 
-// AuthenticateUser -
-func (c *UserAPIApiController) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
+// AuthenticateUser - 
+func (c *UserAPIApiController) AuthenticateUser(w http.ResponseWriter, r *http.Request) { 
 	userCredentials := &UserCredentials{}
 	if err := json.NewDecoder(r.Body).Decode(&userCredentials); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	
 	result, err := c.service.AuthenticateUser(r.Context(), *userCredentials)
 	//If an error occured, encode the error with the status code
 	if err != nil {
@@ -93,18 +93,18 @@ func (c *UserAPIApiController) AuthenticateUser(w http.ResponseWriter, r *http.R
 	}
 	//If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
-
+	
 }
 
 // GetUserByUserId - returns a user for a specific userId
-func (c *UserAPIApiController) GetUserByUserId(w http.ResponseWriter, r *http.Request) {
+func (c *UserAPIApiController) GetUserByUserId(w http.ResponseWriter, r *http.Request) { 
 	params := mux.Vars(r)
 	userId, err := parseInt32Parameter(params["userId"])
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	
 	result, err := c.service.GetUserByUserId(r.Context(), userId)
 	//If an error occured, encode the error with the status code
 	if err != nil {
@@ -113,11 +113,11 @@ func (c *UserAPIApiController) GetUserByUserId(w http.ResponseWriter, r *http.Re
 	}
 	//If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
-
+	
 }
 
 // GetUserByUserName - returns a user for a specific userName
-func (c *UserAPIApiController) GetUserByUserName(w http.ResponseWriter, r *http.Request) {
+func (c *UserAPIApiController) GetUserByUserName(w http.ResponseWriter, r *http.Request) { 
 	params := mux.Vars(r)
 	userName := params["userName"]
 	result, err := c.service.GetUserByUserName(r.Context(), userName)
@@ -128,5 +128,5 @@ func (c *UserAPIApiController) GetUserByUserName(w http.ResponseWriter, r *http.
 	}
 	//If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
-
+	
 }

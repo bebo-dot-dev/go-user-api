@@ -12,12 +12,11 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"io/ioutil"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
+	"github.com/gorilla/mux"
 )
 
 // A Route defines the parameters for an api endpoint
@@ -123,6 +122,7 @@ func readFileHeaderToTempFile(fileHeader *multipart.FileHeader) (*os.File, error
 
 	return file, nil
 }
+
 
 // parseInt64Parameter parses a sting parameter to an int64
 func parseInt64Parameter(param string) (int64, error) {

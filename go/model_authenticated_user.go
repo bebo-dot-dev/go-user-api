@@ -11,6 +11,7 @@
 package api
 
 type AuthenticatedUser struct {
+
 	SessionId string `json:"sessionId"`
 
 	UserName string `json:"userName"`
