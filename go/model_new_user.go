@@ -11,7 +11,6 @@
 package api
 
 type NewUser struct {
-
 	UserName string `json:"userName"`
 
 	FirstName string `json:"firstName"`

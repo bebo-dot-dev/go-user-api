@@ -12,12 +12,12 @@ package api
 
 import (
 	"context"
-	"net/http"
 	"errors"
+	"net/http"
 )
 
 // UserAPIApiService is a service that implents the logic for the UserAPIApiServicer
-// This service should implement the business logic for every endpoint for the UserAPIApi API. 
+// This service should implement the business logic for every endpoint for the UserAPIApi API.
 // Include any external packages or services that will be required by this service.
 type UserAPIApiService struct {
 }
@@ -44,7 +44,7 @@ func (s *UserAPIApiService) AddUser(ctx context.Context, newUser NewUser) (ImplR
 	return Response(http.StatusNotImplemented, nil), errors.New("AddUser method not implemented")
 }
 
-// AuthenticateUser - 
+// AuthenticateUser -
 func (s *UserAPIApiService) AuthenticateUser(ctx context.Context, userCredentials UserCredentials) (ImplResponse, error) {
 	// TODO - update AuthenticateUser with the required logic for this service method.
 	// Add api_user_api_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
@@ -88,4 +88,3 @@ func (s *UserAPIApiService) GetUserByUserName(ctx context.Context, userName stri
 
 	return Response(http.StatusNotImplemented, nil), errors.New("GetUserByUserName method not implemented")
 }
-
