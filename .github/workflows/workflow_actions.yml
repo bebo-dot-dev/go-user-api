@@ -6,7 +6,7 @@ on:
     - 'definition/*.yaml'
 
 jobs:
-  build:
+  codegen-go-server:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,17 +14,16 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Get a local copy of the built open api generator
-        uses: wei/wget@v1
-        with:
-          args: https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.0.1/openapi-generator-cli-5.0.1.jar -O openapi-generator-cli.jar
+      - name: Setup the latest openapi-generator-cli
+        shell: bash
+        run: curl https://raw.githubusercontent.com/OpenAPITools/openapi-generator/master/bin/utils/openapi-generator-cli.sh > ./openapi-generator-cli && chmod u+x ./openapi-generator-cli
       - name: List the contents of the workflow action working dir
-        working-directory: ${{ github.workspace }}
+        shell: bash
         run: ls -la
       - name: Execute code gen
-        run: java -jar ./openapi-generator-cli.jar generate -i ./definition/api.yaml -g go-server -o ./ -ppackageName=api --git-user-id=jjssoftware --git-repo-id=go-user-api
+        run: ./openapi-generator-cli generate -i ./definition/api.yaml -g go-server -o ./ -ppackageName=api --git-user-id=jjssoftware --git-repo-id=go-user-api
       - name: List the contents of the workflow action working dir
-        working-directory: ${{ github.workspace }}
         run: ls -la
       - name: Commit generated code
+        shell: bash
         run: git config --global user.email "joe@jjssoftware.co.uk" && git config --global user.name "Joe" && git fetch --all && git add -A && git commit -m "automated codegen commit" && git pull --rebase && git push --force
