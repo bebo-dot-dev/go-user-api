@@ -16,7 +16,7 @@ import (
 	"net/http"
 )
 
-// UserAPIApiService is a service that implents the logic for the UserAPIApiServicer
+// UserAPIApiService is a service that implements the logic for the UserAPIApiServicer
 // This service should implement the business logic for every endpoint for the UserAPIApi API.
 // Include any external packages or services that will be required by this service.
 type UserAPIApiService struct {

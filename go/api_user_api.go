@@ -18,17 +18,37 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// A UserAPIApiController binds http requests to an api service and writes the service results to the http response
+// UserAPIApiController binds http requests to an api service and writes the service results to the http response
 type UserAPIApiController struct {
-	service UserAPIApiServicer
+	service      UserAPIApiServicer
+	errorHandler ErrorHandler
+}
+
+// UserAPIApiOption for how the controller is set up.
+type UserAPIApiOption func(*UserAPIApiController)
+
+// WithUserAPIApiErrorHandler inject ErrorHandler into controller
+func WithUserAPIApiErrorHandler(h ErrorHandler) UserAPIApiOption {
+	return func(c *UserAPIApiController) {
+		c.errorHandler = h
+	}
 }
 
 // NewUserAPIApiController creates a default api controller
-func NewUserAPIApiController(s UserAPIApiServicer) Router {
-	return &UserAPIApiController{service: s}
+func NewUserAPIApiController(s UserAPIApiServicer, opts ...UserAPIApiOption) Router {
+	controller := &UserAPIApiController{
+		service:      s,
+		errorHandler: DefaultErrorHandler,
+	}
+
+	for _, opt := range opts {
+		opt(controller)
+	}
+
+	return controller
 }
 
-// Routes returns all of the api route for the UserAPIApiController
+// Routes returns all the api routes for the UserAPIApiController
 func (c *UserAPIApiController) Routes() Routes {
 	return Routes{
 		{
@@ -60,38 +80,48 @@ func (c *UserAPIApiController) Routes() Routes {
 
 // AddUser - adds a new user
 func (c *UserAPIApiController) AddUser(w http.ResponseWriter, r *http.Request) {
-	newUser := &NewUser{}
-	if err := json.NewDecoder(r.Body).Decode(&newUser); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	newUserParam := NewUser{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&newUserParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
-
-	result, err := c.service.AddUser(r.Context(), *newUser)
-	//If an error occured, encode the error with the status code
+	if err := AssertNewUserRequired(newUserParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.AddUser(r.Context(), newUserParam)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
-		EncodeJSONResponse(err.Error(), &result.Code, w)
+		c.errorHandler(w, r, err, &result)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
 
 // AuthenticateUser -
 func (c *UserAPIApiController) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
-	userCredentials := &UserCredentials{}
-	if err := json.NewDecoder(r.Body).Decode(&userCredentials); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	userCredentialsParam := UserCredentials{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&userCredentialsParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
-
-	result, err := c.service.AuthenticateUser(r.Context(), *userCredentials)
-	//If an error occured, encode the error with the status code
+	if err := AssertUserCredentialsRequired(userCredentialsParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.AuthenticateUser(r.Context(), userCredentialsParam)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
-		EncodeJSONResponse(err.Error(), &result.Code, w)
+		c.errorHandler(w, r, err, &result)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -99,19 +129,18 @@ func (c *UserAPIApiController) AuthenticateUser(w http.ResponseWriter, r *http.R
 // GetUserByUserId - returns a user for a specific userId
 func (c *UserAPIApiController) GetUserByUserId(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	userId, err := parseInt32Parameter(params["userId"])
+	userIdParam, err := parseInt32Parameter(params["userId"], true)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
-
-	result, err := c.service.GetUserByUserId(r.Context(), userId)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.GetUserByUserId(r.Context(), userIdParam)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
-		EncodeJSONResponse(err.Error(), &result.Code, w)
+		c.errorHandler(w, r, err, &result)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -119,14 +148,14 @@ func (c *UserAPIApiController) GetUserByUserId(w http.ResponseWriter, r *http.Re
 // GetUserByUserName - returns a user for a specific userName
 func (c *UserAPIApiController) GetUserByUserName(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	userName := params["userName"]
-	result, err := c.service.GetUserByUserName(r.Context(), userName)
-	//If an error occured, encode the error with the status code
+	userNameParam := params["userName"]
+	result, err := c.service.GetUserByUserName(r.Context(), userNameParam)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
-		EncodeJSONResponse(err.Error(), &result.Code, w)
+		c.errorHandler(w, r, err, &result)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }

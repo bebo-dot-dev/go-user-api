@@ -17,3 +17,31 @@ type NewUser struct {
 
 	Surname string `json:"surname"`
 }
+
+// AssertNewUserRequired checks if the required fields are not zero-ed
+func AssertNewUserRequired(obj NewUser) error {
+	elements := map[string]interface{}{
+		"userName":  obj.UserName,
+		"firstName": obj.FirstName,
+		"surname":   obj.Surname,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
+	return nil
+}
+
+// AssertRecurseNewUserRequired recursively checks if required fields are not zero-ed in a nested slice.
+// Accepts only nested slice of NewUser (e.g. [][]NewUser), otherwise ErrTypeAssertionError is thrown.
+func AssertRecurseNewUserRequired(objSlice interface{}) error {
+	return AssertRecurseInterfaceRequired(objSlice, func(obj interface{}) error {
+		aNewUser, ok := obj.(NewUser)
+		if !ok {
+			return ErrTypeAssertionError
+		}
+		return AssertNewUserRequired(aNewUser)
+	})
+}

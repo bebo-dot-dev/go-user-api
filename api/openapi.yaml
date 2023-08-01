@@ -39,7 +39,7 @@ paths:
                 $ref: '#/components/schemas/User'
           description: user created
         "400":
-          description: invalid input, object invalid
+          description: "invalid input, object invalid"
         "409":
           description: a user with the supplied details already exists
       summary: adds a new user
@@ -127,7 +127,7 @@ paths:
                 $ref: '#/components/schemas/AuthenticatedUser'
           description: user authenticated
         "400":
-          description: invalid input, object invalid
+          description: "invalid input, object invalid"
         "409":
           description: a user with the supplied details already exists
       tags:
